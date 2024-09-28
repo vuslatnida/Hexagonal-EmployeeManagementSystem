@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id "jacoco"
+    id "org.sonarqube" version "4.4.1.3373"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+    apply plugin: 'org.sonarqube'
+
+    group = 'com.tr'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation platform('org.junit:junit-bom:5.11.1')
+
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    bootJar {
+        mainClass = 'com.tr.HexagonalEmployeeManagementSystemApplication'
+    }
+
+    sonar {
+        properties {
+            property("sonar.projectKey", "employee-management-system")
+            property("sonar.projectName", "employee-management-system")
+            property("sonar.host.url", "http://localhost:9001")
+            property("sonar.token", "sqp_3054d358d358b0118678243f339847e78b764508")
+            property("sonar.qualitygate.wait", true)
+            property("sonar.gradle.skipCompile", true)
+            property("sonar.coverage.exclusions",
+                    "**/common/exception/**," +
+                            "**/entity/**," +
+                            "**/model/**," +
+                            "**/usecase/*UseCase.java," +
+                            "**/HexagonalEmployeeManagementSystemApplication.java")
+            property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory.get().asFile}/reports/jacoco.xml")
+        }
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required = true
+            xml.destination file("${layout.buildDirectory.get().asFile}/reports/jacoco.xml")
+        }
+    }
+
+}

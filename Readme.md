@@ -13,7 +13,7 @@ Bu proje, çalışan yönetim sistemini Hexagonal (Ports and Adapters) mimarisi 
 - `infra/`: Altyapı katmanı ve adaptörler
 - `gradle/`: Gradle yapılandırma dosyaları
 
-## 🛠️ Teknolojiler
+## Teknolojiler
 
 - Java 21
 - Spring Boot 3.3.4
